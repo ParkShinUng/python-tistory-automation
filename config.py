@@ -1,6 +1,6 @@
 import os
 import platform
-import secret
+from secret import user_id, user_pw
 
 from dataclasses import dataclass
 
@@ -11,14 +11,14 @@ class Config:
     platform_info: str = platform.system()
     
     # 병렬 처리
-    num_tabs: int = 5
+    num_tabs: int = 1
     
     # Excel
     POST_DIR = "new_post"
 
     # ChatGPT
-    __user_id = secret.__user_id
-    __user_pw = secret.__user_pw
+    __user_id = user_id
+    __user_pw = user_pw
     tistory_login_url: str = "https://www.tistory.com/auth/login"
     tistory_upload_url: str = "https://korea-beauty-editor-best.tistory.com/manage/newpost"
     user_data_dir: str = "user_data"
