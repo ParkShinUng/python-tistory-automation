@@ -1,29 +1,24 @@
 from pathlib import Path
+from bs4 import BeautifulSoup
 
-def parse_html_file(file_path: str):
-    """
-    첫 번째 '내용 있는 줄'을 제목으로 사용하고,
-    그 이후 전체를 HTML 본문으로 사용.
-    """
-    text = Path(file_path).read_text(encoding="utf-8")
-    lines = text.splitlines()
+def get_all_html(file_path: str) -> str:
+    return Path(file_path).read_text(encoding="utf-8")
 
-    if not lines:
-        raise ValueError("HTML 파일이 비어 있습니다.")
+def extract_title_and_body(html_text: str):
+    soup = BeautifulSoup(html_text, "html.parser")
 
-    title_idx = None
-    for idx, line in enumerate(lines):
-        if line.strip():
-            title_idx = idx
-            break
+    # 1) 첫 번째 h1 태그 찾기
+    first_h1 = soup.find("h1")
+    if first_h1 is None:
+        raise ValueError("HTML 안에 <h1> 태그가 없습니다.")
 
-    if title_idx is None:
-        raise ValueError("파일에 제목으로 사용할 줄(내용 있는 줄)이 없습니다.")
+    # 제목 텍스트
+    title = first_h1.get_text(strip=True)
 
-    title = lines[title_idx].strip()
-    body_html = "\n".join(lines[title_idx + 1 :]).strip()
+    # 2) 첫 번째 h1 태그 제거
+    first_h1.extract()
 
-    if not body_html:
-        raise ValueError("제목 이후에 본문(HTML)이 없습니다.")
+    # 3) 나머지 HTML 전체 (문자열)
+    body_html = str(soup).strip()
 
     return title, body_html
