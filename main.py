@@ -59,7 +59,7 @@ async def main():
         
         new_post_dir_path = os.path.join(os.getcwd(), cfg.POST_DIR)
         file_list: list = os.listdir(new_post_dir_path)
-        if file_list < 1:
+        if len(file_list) < 1:
             log(f"{new_post_dir_path} Directory 내부에 파일이 존재하지 않습니다.")
             await browser.close()
             return
