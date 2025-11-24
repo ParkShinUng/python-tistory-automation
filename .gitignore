@@ -216,4 +216,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # user_data
-user_data_chatgpt/
+user_data*/
+
+# secret
+secret.py
