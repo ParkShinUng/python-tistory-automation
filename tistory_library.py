@@ -7,18 +7,23 @@ class Tistory:
         self.cfg = cfg
         
     async def async_set_title(self, title: str) -> None:
-        title_locator = self.get_locator("textarea#post-title-inp")
+        await self.page.wait_for_selector("textarea#post-title-inp")
+        title_locator = self.page.locator("textarea#post-title-inp")
         await title_locator.fill(title)
         
-    async def async_set_body(self, content: str) -> None:
-        content_locator = self.get_locator("")
-        await content_locator.fill(content)
-        
+    async def async_set_body(self, body_html: str) -> None:
+        content_locator = self.page.locator("textarea#editor-tistory").last
+        await content_locator.fill(body_html)
+    
     async def async_set_html(self, html: str) -> None:
-        html_locator = self.get_locator("")
+        await self.page.wait_for_load_state('networkidle', timeout=10000)
+        await self.page.locator("button#more-plugin-btn-open").click()
+        await self.page.locator("div#plugin-html-block").click()
+        
+        await self.page.wait_for_load_state('networkidle', timeout=10000)
+        html_locator = self.page.locator("div.mce-codeblock-content").locator("textarea").last
         await html_locator.fill(html)
+        await self.page.locator("div.mce-codeblock-btn-submit").click()
     
-    async def get_locator(self, locator_param: str):
-        await self.page.wait_for_load_state(locator_param)
-        return self.page.locator(locator_param)        
-    
+    async def async_publish(self):
+        await self.page.locator().click()
