@@ -3,7 +3,7 @@ import asyncio
 from helper import log
 from chatgpt_session import ChatGPTSession
 from typing import List, Tuple, Optional
-from html_parser import parse_html_file
+from html_parser import extract_title_and_body, get_all_html
 from tistory_library import Tistory
 
 
@@ -16,9 +16,12 @@ async def worker_job(
     결과로 () 리스트 반환.
     """
     for file, file_path in jobs:
-        title, body_html = parse_html_file(file_path)
+        html = get_all_html(file_path)
+        title, body_html = extract_title_and_body(html)
         
-        tistory.async_set_title(title)
-        tistory.async_set_body(body_html)
-        # tistory.async_set_html(html)
+        await tistory.async_set_html(html)
+        
+        await tistory.async_set_title(title)
+        await tistory.async_set_body(body_html)
+        await tistory.async_publish()
         
