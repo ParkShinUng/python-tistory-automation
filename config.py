@@ -1,6 +1,5 @@
 import os
 import platform
-from secret import user_id, user_pw
 
 from dataclasses import dataclass
 
@@ -12,17 +11,16 @@ class Config:
     
     # 병렬 처리
     num_tabs: int = 1
-    
-    # Excel
-    POST_DIR = "new_post"
+    MAX_NEW_POST_PER_USER = 15
 
-    # ChatGPT
-    __user_id = user_id
-    __user_pw = user_pw
-    tistory_login_url: str = "https://www.tistory.com/auth/login"
-    tistory_upload_url: str = "https://korea-beauty-editor-best.tistory.com/manage/newpost"
-    user_data_dir: str = "user_data"
-    user_data_account_dir: str = os.path.join(user_data_dir, "user_data_tistory_psw")
+    # TISTORY
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    NEW_POST_DIR = "new_post"
+    COMPLETE_POST_DIR = "complete_post"
+    TISTORY_LOGIN_URL: str = "https://www.tistory.com/auth/login"
+    TISTORY_NEW_POST_URL: str = "https://korea-beauty-editor-best.tistory.com/manage/newpost"
+    USER_DATA_DIR_PATH: str = os.path.join(BASE_DIR, "user_data")
+    USER_INFO_FILE_NAME = "user_info.txt"
     
     # Playwright 브라우저 설정
     headless: bool = False

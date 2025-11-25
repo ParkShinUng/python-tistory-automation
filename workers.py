@@ -1,8 +1,5 @@
-import asyncio
-
-from helper import log
-from chatgpt_session import ChatGPTSession
-from typing import List, Tuple, Optional
+from helper import log, move_post_file
+from typing import List, Tuple
 from html_parser import extract_title_and_body, get_all_html
 from tistory_library import Tistory
 
@@ -24,6 +21,8 @@ async def worker_job(
         await tistory.async_set_title(title)
         await tistory.async_set_body(body_html)
         await tistory.async_publish()
+        
+        move_post_file(file_path)
         
         return
         
