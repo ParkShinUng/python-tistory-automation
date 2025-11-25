@@ -15,12 +15,14 @@ async def main():
     cfg = Config()
     
     # 계정
-    
     user_data_dir_list = os.listdir(cfg.USER_DATA_DIR_PATH)
     for user_data_dir_name in user_data_dir_list:
-        user_info_file_path = os.path.join(
+        user_info_dir_path = os.path.join(
             cfg.USER_DATA_DIR_PATH,
-            user_data_dir_name, 
+            user_data_dir_name
+        )
+        user_info_file_path = os.path.join(
+            user_info_dir_path,
             cfg.USER_INFO_FILE_NAME
         )
         
@@ -28,7 +30,7 @@ async def main():
             
         async with async_playwright() as p:
             browser = await p.chromium.launch_persistent_context(
-                cfg.user_data_account_dir,
+                user_data_dir=user_info_dir_path,
                 headless=cfg.headless,
                 args=[
                     "--disable-blink-features=AutomationControlled",
@@ -48,7 +50,7 @@ async def main():
 
             # 첫 페이지 준비
             page0 = browser.pages[0] if browser.pages else await browser.new_page()
-            await page0.goto(cfg.tistory_login_url, wait_until="load")
+            await page0.goto(cfg.TISTORY_LOGIN_URL, wait_until="load")
             
             # 로그인 처리(첫 1회만)
             await page0.wait_for_selector('a.btn_login', timeout=10000)
@@ -59,16 +61,16 @@ async def main():
                 await page0.locator('input[name="password"]').fill(user_pw)
                 await page0.locator('button[type="submit"]').click()
                 await page0.wait_for_load_state("networkidle")
-                await page0.goto(cfg.tistory_upload_url, wait_until="load")
+                await page0.goto(cfg.TISTORY_NEW_POST_URL, wait_until="load")
 
             # 나머지 탭 생성
             pages: List[Page] = [page0]
             for _ in range(cfg.num_tabs - 1):
                 new_page = await browser.new_page()
-                await new_page.goto(cfg.tistory_upload_url, wait_until="commit")
+                await new_page.goto(cfg.TISTORY_NEW_POST_URL, wait_until="commit")
                 pages.append(new_page)
             
-            new_post_dir_path = os.path.join(cfg.BASE_DIR, cfg.POST_DIR)
+            new_post_dir_path = os.path.join(cfg.BASE_DIR, cfg.NEW_POST_DIR)
             file_list: list = os.listdir(new_post_dir_path)[:cfg.MAX_NEW_POST_PER_USER]
             if len(file_list) < 1:
                 log(f"{new_post_dir_path} Directory 내부에 파일이 존재하지 않습니다.")
