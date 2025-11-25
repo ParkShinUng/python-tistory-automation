@@ -8,6 +8,8 @@ def log(msg: str) -> None:
     return
 
 def get_user_info_from_text(user_info_file_path: str) -> tuple:
+    if not os.path.exists(user_info_file_path):
+        raise FileNotFoundError
     with open(user_info_file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
         
