@@ -4,10 +4,11 @@ import asyncio
 from typing import List, Tuple
 from config import Config
 from workers import worker_job
-from helper import log, get_user_info_from_text
-from tistory_library import Tistory
+from helper import log, get_user_info_from_env
+from tistory import TistoryClient
 
 from playwright.async_api import async_playwright, Page
+from chainshift_playwright_extension import get_async_browser
 
 
 async def main():
@@ -25,27 +26,10 @@ async def main():
             cfg.USER_INFO_FILE_NAME
         )
         
-        user_id, user_pw = get_user_info_from_text(user_info_file_path)
+        user_id, user_pw = get_user_info_from_env(user_info_file_path)
             
         async with async_playwright() as p:
-            browser = await p.chromium.launch_persistent_context(
-                user_data_dir=user_info_dir_path,
-                headless=cfg.headless,
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                    "--no-sandbox",
-                    "--disable-infobars",
-                    "--disable-dev-shm-usage",
-                    "--start-maximized",
-                ],
-                user_agent=(
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/140.0.0.0 Safari/537.36"
-                ),
-                locale="ko-KR",
-                timezone_id="Asia/Seoul",
-            )
+            browser = await get_async_browser(p, user_info_dir_path, cfg.headless)
 
             # 첫 페이지 준비
             page0 = browser.pages[0] if browser.pages else await browser.new_page()
@@ -69,14 +53,14 @@ async def main():
                 await new_page.goto(cfg.TISTORY_NEW_POST_URL, wait_until="commit")
                 pages.append(new_page)
             
-            new_post_dir_path = os.path.join(cfg.BASE_DIR, cfg.NEW_POST_DIR)
-            file_list: list = os.listdir(new_post_dir_path)[:cfg.MAX_NEW_POST_PER_USER]
+            input_post_dir_path = os.path.join(cfg.BASE_DIR, cfg.INPUT_POST_DIR)
+            file_list: list = os.listdir(input_post_dir_path)[:cfg.MAX_NEW_POST_PER_USER]
             if len(file_list) < 1:
-                log(f"{new_post_dir_path} Directory 내부에 파일이 존재하지 않습니다.")
+                log(f"{input_post_dir_path} Directory 내부에 파일이 존재하지 않습니다.")
                 await browser.close()
                 return
             
-            post_jobs = [(file, os.path.join(new_post_dir_path, file)) for file in file_list]
+            post_jobs = [(file, os.path.join(input_post_dir_path, file)) for file in file_list]
                 
             # ----- 작업 분배 (라운드 로빈) -----
             # 5개 Tab에 작업 균등 분배 - 15 : [3, 3, 3, 3, 3]
@@ -90,7 +74,7 @@ async def main():
             for idx, jobs in enumerate(worker_jobs):
                 if not jobs:
                     continue
-                tistory = Tistory(pages[idx], cfg)
+                tistory = TistoryClient(pages[idx], cfg)
                 tasks.append(asyncio.create_task(worker_job(tistory, jobs)))
 
             all_results_nested: List[List[Tuple[int, str]]] = await asyncio.gather(*tasks)

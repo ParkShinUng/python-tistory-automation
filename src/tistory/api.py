@@ -1,11 +1,13 @@
 from config import Config
 from playwright.async_api import Page
+from tistory.html_parser import extract_title_and_body
+
 
 locator_textarea_title = "textarea#post-title-inp"
 locator_plugin_btn_open = "button#more-plugin-btn-open"
 locator_plugin_html_block = "div#plugin-html-block"
 
-class Tistory:
+class TistoryClient:
     def __init__(self, page: Page, cfg: Config):
         self.page = page
         self.cfg = cfg
@@ -56,4 +58,12 @@ class Tistory:
         await self.page.wait_for_load_state('networkidle', timeout=10000)
         await self.page.locator('input#open20').click()
         await self.page.wait_for_load_state('networkidle', timeout=10000)
+    
+    async def post(self, html):
+        await self.async_set_html(html)
         
+        title, body_html = extract_title_and_body(html)
+        
+        await self.async_set_title(title)
+        await self.async_set_body(body_html)
+        await self.async_publish()

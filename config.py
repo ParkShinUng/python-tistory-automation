@@ -16,10 +16,10 @@ class Config:
     # TISTORY
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     NEW_POST_DIR = "new_post"
-    COMPLETE_POST_DIR = "complete_post"
+    COMPLETE_POST_DIR = "finish_post"
     TISTORY_LOGIN_URL: str = "https://www.tistory.com/auth/login"
     TISTORY_NEW_POST_URL: str = "https://korea-beauty-editor-best.tistory.com/manage/newpost"
-    USER_DATA_DIR_PATH: str = os.path.join(BASE_DIR, "user_data")
+    USER_DATA_DIR_PATH: str = os.path.join(BASE_DIR, "data", "user_data")
     USER_INFO_FILE_NAME = "user_info.txt"
     
     # Playwright 브라우저 설정
