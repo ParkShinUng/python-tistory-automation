@@ -20,5 +20,5 @@ async def worker_job(
         await tistory_client.post(html)
         
         src_file_path = file_path
-        dst_file_path = file_path.replace(Config.INPUT_POST_DIR, Config.PUBLISHED_POST_DIR)
+        dst_file_path = file_path.replace(Config.INPUT_POST_DIR_NAME, Config.PUBLISHED_POST_DIR_NAME)
         shutil.move(src_file_path, dst_file_path)

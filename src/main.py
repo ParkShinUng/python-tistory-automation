@@ -56,7 +56,7 @@ async def main():
                 
             # ----- 작업 분배 (라운드 로빈) -----
             # 5개 Tab에 작업 균등 분배 - 15 : [3, 3, 3, 3, 3]
-            worker_jobs: List[List[Tuple[int, str]]] = [[] for _ in range(Config.num_tabs)]
+            worker_jobs: List[List[Tuple[str, str]]] = [[] for _ in range(Config.num_tabs)]
             for i, job in enumerate(post_jobs):
                 worker_index = i % Config.num_tabs
                 worker_jobs[worker_index].append(job)
@@ -66,8 +66,8 @@ async def main():
             for idx, jobs in enumerate(worker_jobs):
                 if not jobs:
                     continue
-                tistory = TistoryClient(pages[idx])
-                tasks.append(asyncio.create_task(worker_job(tistory, jobs)))
+                tistory_client = TistoryClient(pages[idx])
+                tasks.append(asyncio.create_task(worker_job(tistory_client, jobs)))
 
             all_results_nested: List[List[Tuple[int, str]]] = await asyncio.gather(*tasks)
 
