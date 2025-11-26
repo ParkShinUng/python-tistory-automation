@@ -6,13 +6,18 @@ from playwright.sync_api import sync_playwright
 
 cfg = Config()
 
-account_initial_name = "hyh"
-user_data_dir_name = f"user_data_tistory_{account_initial_name}"
+account_initial_name = "psw"
+user_id = ""
+user_pw = ""
 
+user_data_dir_name = f"user_data_tistory_{account_initial_name}"
 user_info_dir_path = os.path.join(
     cfg.USER_DATA_DIR_PATH,
     user_data_dir_name
 )
+
+STORAGE_STATE_FILE = "tistory_login_state.json"
+STORAGE_STATE_FILE_PATH = os.path.join(user_data_dir_name, STORAGE_STATE_FILE)
 
 if not os.path.isdir(user_info_dir_path):
     os.mkdir(user_info_dir_path)
@@ -44,5 +49,11 @@ with sync_playwright() as p:
     login_btn = page.locator('a.btn_login')
     if login_btn.count() > 0:
         login_btn.click()
+        page.locator('input[name="loginId"]').fill(user_id)
+        page.locator('input[name="password"]').fill(user_pw)
+        page.locator('button[type="submit"]').click()
+        page.wait_for_load_state("networkidle")
+        page.wait_for_url("https://www.tistory.com/", timeout=30000)
+        page.context.storage_state(path=STORAGE_STATE_FILE_PATH)
         time.sleep(600)
     
