@@ -1,7 +1,6 @@
 import os
 import asyncio
 
-from pathlib import Path
 from typing import List, Tuple
 from config import Config
 from workers import worker_job

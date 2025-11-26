@@ -1,5 +1,4 @@
 import os
-import time
 
 from config import Config
 from playwright.sync_api import sync_playwright
@@ -54,6 +53,4 @@ with sync_playwright() as p:
         page.locator('button[type="submit"]').click()
         page.wait_for_load_state("networkidle")
         page.wait_for_url("https://www.tistory.com/", timeout=30000)
-        page.context.storage_state(path=STORAGE_STATE_FILE_PATH)
-        time.sleep(600)
     
