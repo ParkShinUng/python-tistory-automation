@@ -4,7 +4,7 @@ import asyncio
 from typing import List, Tuple
 from config import Config
 from workers import worker_job
-from helper import log, get_user_info_from_env
+from helper import log, EnvHelper
 from tistory import TistoryClient
 
 from playwright.async_api import async_playwright, Page
@@ -26,7 +26,8 @@ async def main():
             cfg.USER_INFO_FILE_NAME
         )
         
-        user_id, user_pw = get_user_info_from_env(user_info_file_path)
+        user_id, user_pw = EnvHelper._instance.get_user_info(user_info_file_path)
+        new_post_url = EnvHelper._instance.get_new_post_url(user_info_file_path)
             
         async with async_playwright() as p:
             browser = await get_async_browser(p, user_info_dir_path, cfg.headless)
@@ -44,13 +45,13 @@ async def main():
                 await page0.locator('input[name="password"]').fill(user_pw)
                 await page0.locator('button[type="submit"]').click()
                 await page0.wait_for_load_state("networkidle")
-                await page0.goto(cfg.TISTORY_NEW_POST_URL, wait_until="load")
+                await page0.goto(new_post_url, wait_until="load")
 
             # 나머지 탭 생성
             pages: List[Page] = [page0]
             for _ in range(cfg.num_tabs - 1):
                 new_page = await browser.new_page()
-                await new_page.goto(cfg.TISTORY_NEW_POST_URL, wait_until="commit")
+                await new_page.goto(new_post_url, wait_until="commit")
                 pages.append(new_page)
             
             input_post_dir_path = os.path.join(cfg.BASE_DIR, cfg.INPUT_POST_DIR)
