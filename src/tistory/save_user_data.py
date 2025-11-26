@@ -1,6 +1,6 @@
 import os
 
-from config import Config
+from src.config import Config
 from playwright.sync_api import sync_playwright
 
 cfg = Config()

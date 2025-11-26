@@ -1,20 +1,18 @@
-from config import Config
 from playwright.async_api import Page
-from tistory.html_parser import extract_title_and_body
+from .html_parser import extract_title_and_body
 
-
-locator_textarea_title = "textarea#post-title-inp"
-locator_plugin_btn_open = "button#more-plugin-btn-open"
-locator_plugin_html_block = "div#plugin-html-block"
 
 class TistoryClient:
-    def __init__(self, page: Page, cfg: Config):
+    locator_textarea_title = "textarea#post-title-inp"
+    locator_plugin_btn_open = "button#more-plugin-btn-open"
+    locator_plugin_html_block = "div#plugin-html-block"
+    
+    def __init__(self, page: Page):
         self.page = page
-        self.cfg = cfg
         
     async def async_set_title(self, title: str) -> None:
-        await self.page.wait_for_selector(locator_textarea_title)
-        title_locator = self.page.locator(locator_textarea_title)
+        await self.page.wait_for_selector(self.locator_textarea_title)
+        title_locator = self.page.locator(self.locator_textarea_title)
         await title_locator.fill(title)
         
     async def async_set_body(self, body_html: str) -> None:
@@ -22,8 +20,8 @@ class TistoryClient:
     
     async def async_set_html(self, html: str) -> None:
         await self.page.wait_for_load_state('networkidle', timeout=10000)
-        await self.page.locator(locator_plugin_btn_open).click()
-        await self.page.locator(locator_plugin_html_block).click()
+        await self.page.locator(self.locator_plugin_btn_open).click()
+        await self.page.locator(self.locator_plugin_html_block).click()
         
         await self.page.wait_for_load_state('networkidle', timeout=10000)
         html_locator = self.page.locator("div.mce-codeblock-content").locator("textarea").last

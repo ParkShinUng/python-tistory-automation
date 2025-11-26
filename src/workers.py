@@ -1,7 +1,10 @@
-from helper import log, move_post_file
+import shutil
+
+from helper import log
 from typing import List, Tuple
 from tistory.html_parser import get_all_html
 from tistory import TistoryClient
+from config import Config
 
 
 async def worker_job(
@@ -15,4 +18,7 @@ async def worker_job(
         html = get_all_html(file_path)
         
         await tistory_client.post(html)
-        move_post_file(file_path)
+        
+        src_file_path = file_path
+        dst_file_path = file_path.replace(Config.INPUT_POST_DIR, Config.PUBLISHED_POST_DIR)
+        shutil.move(src_file_path, dst_file_path)
