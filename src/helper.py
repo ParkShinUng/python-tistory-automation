@@ -23,20 +23,22 @@ class EnvHelper(object):
     def get_value_by_key(self, key: str) -> str:
         return self.env[key]
     
-    def get_user_info(self, user_data_dir: str) -> tuple:
-        user_initial = self.get_user_initial_from_dir(user_data_dir)
+    def get_user_info(self, user_str: str) -> tuple:
+        user_initial = self.get_user_initial(user_str)
         id_key = f"{user_initial}{self.id_key_str}"
         pw_key = f"{user_initial}{self.pw_key_str}"
         
         return self.env[id_key], self.env[pw_key]
     
-    def get_new_post_url(self, user_data_dir: str) -> str:
-        user_initial = self.get_user_initial_from_dir(user_data_dir)
+    def get_new_post_url(self, user_str: str) -> str:
+        user_initial = self.get_user_initial(user_str)
         url_key = f"{user_initial}{self.new_post_key_str}"
         return self.env[url_key]
     
-    def get_user_initial_from_dir(self, user_data_dir: str) -> str:
-        return user_data_dir.replace(self.user_data_tistory_str, "")
+    def get_user_initial(self, user_str: str) -> str:
+        if self.user_data_tistory_str in user_str:
+            return user_str.replace(self.user_data_tistory_str, "")
+        return user_str
 
 
 class FileHelper:

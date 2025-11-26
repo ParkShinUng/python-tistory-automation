@@ -1,13 +1,14 @@
 import os
 
 from src.config import Config
+from src.helper import EnvHelper
 from playwright.sync_api import sync_playwright
 
 cfg = Config()
 
 account_initial_name = "psw"
-user_id = ""
-user_pw = ""
+
+user_id, user_pw = EnvHelper().get_user_info(account_initial_name)
 
 user_data_dir_name = f"user_data_tistory_{account_initial_name}"
 user_info_dir_path = os.path.join(
