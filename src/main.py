@@ -29,7 +29,7 @@ async def main():
             await page0.goto(Config.TISTORY_LOGIN_URL, wait_until="load")
             
             # 로그인 처리(첫 1회만)
-            if await page0.locator('a.btn_login').is_visible() == True:
+            if await page0.locator('a.btn_login').is_visible():
                 await page0.locator('a.btn_login').click()
                 await page0.locator('input[name="loginId"]').fill(user_id)
                 await page0.locator('input[name="password"]').fill(user_pw)
@@ -45,7 +45,7 @@ async def main():
                 await new_page.goto(new_post_url, wait_until="commit")
                 pages.append(new_page)
             
-            input_post_dir_path = os.path.join(Config.BASE_DIR, Config.INPUT_POST_DIR)
+            input_post_dir_path = os.path.join(Config.DATA_DIR_PATH, Config.INPUT_POST_DIR_NAME)
             file_list: list = os.listdir(input_post_dir_path)[:Config.MAX_NEW_POST_PER_USER]
             if len(file_list) < 1:
                 log(f"{input_post_dir_path} Directory 내부에 파일이 존재하지 않습니다.")
