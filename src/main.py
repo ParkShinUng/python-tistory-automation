@@ -9,7 +9,7 @@ from config import Config
 from playwright.async_api import async_playwright, Page
 from chainshift_playwright_extension import get_async_browser
 
-async def main():
+async def start_auto_post(auto_post_dict: dict = None):
     # 계정
     user_data_dir_list = os.listdir(Config.USER_DATA_DIR_PATH)
     for user_data_dir_name in user_data_dir_list:
@@ -42,15 +42,19 @@ async def main():
             pages: List[Page] = [page0]
             for _ in range(Config.num_tabs - 1):
                 new_page = await browser.new_page()
-                await new_page.goto(new_post_url, wait_until="commit")
                 pages.append(new_page)
-            
-            input_post_dir_path = os.path.join(Config.DATA_DIR_PATH, Config.INPUT_POST_DIR_NAME)
-            file_list: list = os.listdir(input_post_dir_path)[:Config.MAX_NEW_POST_PER_USER]
-            if len(file_list) < 1:
-                log(f"{input_post_dir_path} Directory 내부에 파일이 존재하지 않습니다.")
-                await browser.close()
-                return
+
+            if auto_post_dict:
+                file_list = list(auto_post_dict.keys())
+                post_jobs = [(file_path, tag_list) for file_path, tag_list in auto_post_dict.items()]
+
+            else:
+                input_post_dir_path = os.path.join(Config.DATA_DIR_PATH, Config.INPUT_POST_DIR_NAME)
+                file_list: list = os.listdir(input_post_dir_path)[:Config.MAX_NEW_POST_PER_USER]
+                if len(file_list) < 1:
+                    log(f"{input_post_dir_path} Directory 내부에 파일이 존재하지 않습니다.")
+                    await browser.close()
+                    return
             
             post_jobs = [(file, os.path.join(input_post_dir_path, file)) for file in file_list]
                 
@@ -66,13 +70,13 @@ async def main():
             for idx, jobs in enumerate(worker_jobs):
                 if not jobs:
                     continue
-                tistory_client = TistoryClient(pages[idx])
+                tistory_client = TistoryClient(pages[idx], new_post_url)
                 tasks.append(asyncio.create_task(worker_job(tistory_client, jobs)))
 
-            all_results_nested: List[List[Tuple[int, str]]] = await asyncio.gather(*tasks)
+            # all_results_nested: List[List[Tuple[int, str]]] = await asyncio.gather(*tasks)
 
             await browser.close()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(start_auto_post())

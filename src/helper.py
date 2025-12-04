@@ -33,7 +33,7 @@ class EnvHelper(object):
     def get_new_post_url(self, user_str: str) -> str:
         user_initial = self.get_user_initial(user_str)
         url_key = f"{user_initial}{self.new_post_key_str}"
-        return self.env[url_key]
+        return self.env[url_key] + "/manage/newpost"
     
     def get_user_initial(self, user_str: str) -> str:
         if self.user_data_tistory_str in user_str:

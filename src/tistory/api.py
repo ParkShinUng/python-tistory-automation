@@ -27,8 +27,9 @@ class TistoryClient:
         }
     """
 
-    def __init__(self, page: Page):
+    def __init__(self, page: Page, new_post_url: str):
         self.page = page
+        self.new_post_url = new_post_url
         
     async def async_set_title(self, title: str) -> None:
         await self.page.wait_for_selector(self.locator_textarea_title)
@@ -60,12 +61,18 @@ class TistoryClient:
 
     async def async_set_tag(self):
         # 태그 입력은 최대 10개까지만 가능
-        await self.page.locator(self.locator_post_tag_input)
+        # await self.page.locator(self.locator_post_tag_input)
+        return
         
     async def append_html_with_tinymce(self, html: str):
         await self.page.evaluate(self.add_content_javascript, html)
-        
+
+    async def async_move_new_post_url(self):
+        await self.page.goto(self.new_post_url, wait_until="commit")
+
     async def asnyc_post(self, html):
+        await self.async_move_new_post_url()
+
         title, body_html = extract_title_and_body(html)
 
         await self.async_set_html(html)

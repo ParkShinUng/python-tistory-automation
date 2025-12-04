@@ -241,14 +241,14 @@ class AutomationApp(ctk.CTk):
             self.log_message("[Success] 모든 유효성 검사 통과! 포스팅 자동화 Start")
 
             # --- 실제 자동화 로직을 여기에 구현 ---
-            auto_post_tuple_list = list(tuple())
+            auto_post_dict = dict()
             for file_path in self.uploaded_files:
                 file_name = os.path.basename(file_path)
                 entry = self.file_tag_entries[file_name]
-                final_tags_raw = entry.get()
-                final_tags = [t.strip() for t in final_tags_raw.split(' ') if t.strip()]
+                tags_raw = entry.get()
+                tag_list = [t.strip() for t in tags_raw.split(' ') if t.strip()]
 
-                auto_post_tuple_list.append((file_path, final_tags))
+                auto_post_dict[file_path] = tag_list
 
             # 자동화 시작 Send Signal
         else:
