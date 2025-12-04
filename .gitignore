@@ -216,7 +216,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # user_data
-user_data*/
+data*/
 
 # secret
 secret.py
