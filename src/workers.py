@@ -17,7 +17,7 @@ async def worker_job(
     for _, file_path in jobs:
         html = get_all_html(file_path)
         
-        await tistory_client.post(html)
+        await tistory_client.asnyc_post(html)
         
         src_file_path = file_path
         dst_file_path = file_path.replace(Config.INPUT_POST_DIR_NAME, Config.PUBLISHED_POST_DIR_NAME)

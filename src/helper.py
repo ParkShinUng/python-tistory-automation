@@ -10,9 +10,9 @@ class EnvHelper(object):
 
     def __init__(self):
         self.env = self._set_env()
-        self.id_key_str = "_user_id"
-        self.pw_key_str = "_user_pw"
-        self.new_post_key_str = "_new_post_url"
+        self.id_key_str = "_USER_ID"
+        self.pw_key_str = "_USER_PW"
+        self.new_post_key_str = "_NEW_POST_URL"
         self.user_data_tistory_str = "user_data_tistory_"
         
     def _set_env(self):
@@ -37,8 +37,8 @@ class EnvHelper(object):
     
     def get_user_initial(self, user_str: str) -> str:
         if self.user_data_tistory_str in user_str:
-            return user_str.replace(self.user_data_tistory_str, "")
-        return user_str
+            return user_str.replace(self.user_data_tistory_str, "").upper()
+        return user_str.upper()
 
 
 def log(msg: str) -> None:
