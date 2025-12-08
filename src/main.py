@@ -3,15 +3,16 @@ import asyncio
 
 from typing import List, Tuple
 from workers import worker_job
-from helper import log, EnvHelper
+from helper import EnvHelper
 from tistory import TistoryClient
-from config import Config
+from src.config import Config
 from playwright.async_api import async_playwright, Page
 from chainshift_playwright_extension import get_async_browser
 
-async def start_auto_post(auto_post_dict: dict = None):
+async def start_auto_post(post_tuple_list: list = None):
     # 계정
     user_data_dir_list = os.listdir(Config.USER_DATA_DIR_PATH)
+
     for user_data_dir_name in user_data_dir_list:
         user_info_dir_path = os.path.join(
             Config.USER_DATA_DIR_PATH,
@@ -44,24 +45,11 @@ async def start_auto_post(auto_post_dict: dict = None):
                 new_page = await browser.new_page()
                 pages.append(new_page)
 
-            if auto_post_dict:
-                file_list = list(auto_post_dict.keys())
-                post_jobs = [(file_path, tag_list) for file_path, tag_list in auto_post_dict.items()]
-
-            else:
-                input_post_dir_path = os.path.join(Config.DATA_DIR_PATH, Config.INPUT_POST_DIR_NAME)
-                file_list: list = os.listdir(input_post_dir_path)[:Config.MAX_NEW_POST_PER_USER]
-                if len(file_list) < 1:
-                    log(f"{input_post_dir_path} Directory 내부에 파일이 존재하지 않습니다.")
-                    await browser.close()
-                    return
-            
-            post_jobs = [(file, os.path.join(input_post_dir_path, file)) for file in file_list]
-                
             # ----- 작업 분배 (라운드 로빈) -----
             # 5개 Tab에 작업 균등 분배 - 15 : [3, 3, 3, 3, 3]
             worker_jobs: List[List[Tuple[str, str]]] = [[] for _ in range(Config.num_tabs)]
-            for i, job in enumerate(post_jobs):
+            for i, job in enumerate(post_tuple_list):
+            # for i, job in enumerate(post_jobs):
                 worker_index = i % Config.num_tabs
                 worker_jobs[worker_index].append(job)
                     

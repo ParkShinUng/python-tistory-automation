@@ -11,13 +11,11 @@ class Config():
         return cls._instance
 
     # Directory Path, Name
-    MAIN_EXECUTE_DIR = os.path.dirname(os.path.abspath(__file__))
-    PROJECT_ROOT_DIR = os.path.abspath(os.path.join(MAIN_EXECUTE_DIR, '..'))
-    DATA_DIR_PATH: str = os.path.join(PROJECT_ROOT_DIR, 'data')
-    USER_DATA_DIR_PATH: str = os.path.join(DATA_DIR_PATH, "user_data")
-    INPUT_POST_DIR_NAME = "input"
-    PUBLISHED_POST_DIR_NAME = "published"
-    
+    CONFIG_EXECUTE_DIR = os.path.dirname(os.path.abspath(__file__))
+    PROJECT_ROOT_DIR = os.path.abspath(os.path.join(CONFIG_EXECUTE_DIR, '..'))
+    USER_DATA_DIR_PATH: str = os.path.join(PROJECT_ROOT_DIR, "user_data")
+    AUTH_FILE_PATH: str = os.path.join(PROJECT_ROOT_DIR, 'auth/tistory_auth.json')
+
     # System
     platform_info: str = platform.system()
     

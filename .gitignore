@@ -148,7 +148,7 @@ activemq-data/
 *.sage.py
 
 # Environments
-.env
+.tistory_auth.env
 .envrc
 .venv
 env/
@@ -216,7 +216,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # user_data
-data*/
+user_data*/
 
-# secret
-secret.py
+# auth
+*_auth.json

@@ -59,7 +59,7 @@ class TistoryClient:
         await self.page.locator(self.locator_post_publish_btn).click()
         await asyncio.sleep(3)
 
-    async def async_set_tag(self):
+    async def async_set_tag(self, tags: str):
         # 태그 입력은 최대 10개까지만 가능
         # await self.page.locator(self.locator_post_tag_input)
         return
@@ -70,7 +70,7 @@ class TistoryClient:
     async def async_move_new_post_url(self):
         await self.page.goto(self.new_post_url, wait_until="commit")
 
-    async def asnyc_post(self, html):
+    async def asnyc_post(self, html: str, tags: str):
         await self.async_move_new_post_url()
 
         title, body_html = extract_title_and_body(html)
@@ -78,5 +78,5 @@ class TistoryClient:
         await self.async_set_html(html)
         await self.async_set_title(title)
         await self.async_set_body(body_html)
-        await self.async_set_tag()
+        await self.async_set_tag(tags)
         await self.async_publish()
