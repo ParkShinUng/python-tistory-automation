@@ -144,10 +144,44 @@ class LoginRegisterDialog(QDialog):
             QMessageBox.warning(self, "경고", "ID, Password, Blog 이름은 필수 입력 항목입니다.")
             return
 
+        reply = QMessageBox()
+        reply.setWindowTitle('Login Complete Confirmation')
+        reply.setText("로그인 완료 후 확인 버튼 클릭.")
+        reply.setStandardButtons(QMessageBox.StandardButton.Yes)
+        reply.exec()
+        if reply == QMessageBox.StandardButton.Yes:
+            print('Confirm')
+
+        # Playwright Login 추가
+        user_data_dir_name = f"{id_val}_user_data_tistory"
+        user_info_dir_path = os.path.join(
+            Config.USER_DATA_DIR_PATH,
+            user_data_dir_name
+        )
+
+        if not os.path.isdir(user_info_dir_path):
+            os.mkdir(user_info_dir_path)
+
+        with sync_playwright() as p:
+            browser = get_sync_browser(p, user_info_dir_path, Config.headless)
+
+            page = browser.pages[0] if browser.pages else browser.new_page()
+            page.goto(Config.TISTORY_LOGIN_URL, wait_until="load")
+
+            page.wait_for_selector('a.btn_login', timeout=10000)
+            login_btn = page.locator('a.btn_login')
+            if login_btn.count() > 0:
+                login_btn.click()
+                page.locator('input[name="loginId"]').fill(id_val)
+                page.locator('input[name="password"]').fill(pw_val)
+                page.locator('button[type="submit"]').click()
+                page.wait_for_load_state("networkidle")
+                page.wait_for_url("https://www.tistory.com/", timeout=30000)
+
         self.result_data = {
             'ID': id_val,
             'PW': pw_val,
-            'POST_URL': f"https://{blog_val}.tistory.com"  # URL 형식으로 저장
+            'POST_URL': blog_val
         }
         self.accept()
 
@@ -227,34 +261,6 @@ class LoginConfigWindow(QWidget):
         if dialog.exec() == QDialog.DialogCode.Accepted:
             new_data = dialog.get_data()
             if new_data:
-                # Playwright Login 추가
-                user_data_dir_name = f"{new_data.ID}_user_data_tistory"
-                user_info_dir_path = os.path.join(
-                    Config.USER_DATA_DIR_PATH,
-                    user_data_dir_name
-                )
-
-                if not os.path.isdir(user_info_dir_path):
-                    os.mkdir(user_info_dir_path)
-
-                with sync_playwright() as p:
-                    browser = get_sync_browser(p, user_info_dir_path, Config.headless)
-
-                    page = browser.pages[0] if browser.pages else browser.new_page()
-                    page.goto(Config.TISTORY_LOGIN_URL, wait_until="load")
-
-                    page.wait_for_selector('a.btn_login', timeout=10000)
-                    login_btn = page.locator('a.btn_login')
-                    if login_btn.count() > 0:
-                        login_btn.click()
-                        page.locator('input[name="loginId"]').fill(new_data.ID)
-                        page.locator('input[name="password"]').fill(new_data.PW)
-                        page.locator('button[type="submit"]').click()
-                        page.wait_for_load_state("networkidle")
-                        page.wait_for_url("https://www.tistory.com/", timeout=30000)
-
-                # Login 확인 버튼 클릭 시 아래 코드 실행
-
                 # 1. 데이터 추가
                 self.login_data.append(new_data)
 
