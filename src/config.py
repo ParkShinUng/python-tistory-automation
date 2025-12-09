@@ -17,12 +17,13 @@ class Config():
     AUTH_FILE_PATH: str = os.path.join(PROJECT_ROOT_DIR, 'auth/tistory_auth.json')
 
     # 병렬 처리
-    num_tabs: int = 1
+    num_tabs: int = 5
     MAX_FILES = 15
     MAX_TAGS = 10
 
     # TISTORY
     TISTORY_LOGIN_URL: str = "https://www.tistory.com/auth/login"
+    TISTORY_MAIN_URL: str = "https://www.tistory.com/"
     
     # Playwright 브라우저 설정
     headless: bool = False

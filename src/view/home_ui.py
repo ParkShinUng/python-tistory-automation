@@ -101,7 +101,7 @@ class AutomationApp(QWidget):
 
         id_frame = QFrame(self)
         id_layout = QHBoxLayout(id_frame)
-        id_layout.setContentsMargins(0, 0, 0, 10)
+        id_layout.setContentsMargins(0, 20, 0, 10)
 
         id_layout.addWidget(QLabel("✅ 포스팅에 사용할 계정 ID 선택:"))
 

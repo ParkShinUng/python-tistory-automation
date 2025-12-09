@@ -2,6 +2,7 @@ import os
 import asyncio
 
 from typing import List, Tuple
+from urllib.parse import urljoin
 from playwright.async_api import async_playwright, Page
 
 from src.controller.workers import worker_job
@@ -14,10 +15,10 @@ from chainshift_playwright_extension import get_async_browser
 
 async def start_auto_post(post_tuple_dict: dict = None):
     # 계정
-    user_id = post_tuple_dict.keys()[0]
+    user_id = list(post_tuple_dict.keys())[0]
     user_data = find_user_data_by_id(user_id)
     user_pw = user_data['PW']
-    new_post_url = f"{user_data['POST_URL']}/manage/newpost"
+    new_post_url = urljoin(user_data['POST_URL'], "/manage/newpost")
     post_tuple_list = post_tuple_dict[user_id]
     user_info_dir_path = os.path.join(Config.USER_DATA_DIR_PATH, f"{user_id}_user_data_tistory")
 
@@ -36,7 +37,7 @@ async def start_auto_post(post_tuple_dict: dict = None):
             await page0.locator('button[type="submit"]').click()
             await page0.wait_for_load_state("networkidle")
 
-        await page0.goto(new_post_url, wait_until="load")
+        await page0.goto(Config.TISTORY_MAIN_URL, wait_until="load")
 
         # 나머지 탭 생성
         pages: List[Page] = [page0]
@@ -60,6 +61,6 @@ async def start_auto_post(post_tuple_dict: dict = None):
             tistory_client = TistoryClient(pages[idx], new_post_url)
             tasks.append(asyncio.create_task(worker_job(tistory_client, jobs)))
 
-        # all_results_nested: List[List[Tuple[int, str]]] = await asyncio.gather(*tasks)
+        all_results_nested: List[List[Tuple[int, str]]] = await asyncio.gather(*tasks)
 
         await browser.close()
