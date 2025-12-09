@@ -479,7 +479,10 @@ class AutomationApp(QWidget):
             send_post_list_dict[selected_id] = post_tuple_list
             self.log_message(f"[Data Ready] 자동화에 사용될 포스팅 데이터 {len(post_tuple_list)}개 준비 완료.")
 
+            # Posting Start
             asyncio.run(start_auto_post(send_post_list_dict))
+            self.log_message(f"[Success] {len(post_tuple_list)}개 포스팅 완료.")
+            self.clear_files()
         else:
             QMessageBox.critical(self, "자동화 중단", "태그 유효성 검사에 실패했습니다. 빨간색으로 표시된 입력 필드를 수정해주세요.")
             self.log_message("[Error] 유효성 검사 실패로 자동화 Stop.")

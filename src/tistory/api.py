@@ -1,6 +1,6 @@
 import asyncio
 
-from playwright.async_api import Page
+from playwright.async_api import Page, Dialog
 from src.tistory.html_parser import extract_title_and_body
 
 
@@ -68,12 +68,13 @@ class TistoryClient:
         await self.page.locator(self.locator_post_publish_btn).click()
         await asyncio.sleep(5)
 
-    async def async_set_tag(self, tags: str):
+    async def async_set_tag(self, tags: list):
         # 태그 입력은 최대 10개까지만 가능
         if not tags:
             return
-
-        # await self.page.locator(self.locator_post_tag_input)
+        for tag in tags:
+            await self.page.locator(self.locator_post_tag_input).fill(tag)
+            await self.page.keyboard.press('Enter')
 
     async def append_html_with_tinymce(self, html: str):
         await self.page.evaluate(self.add_content_javascript, html)
@@ -81,7 +82,8 @@ class TistoryClient:
     async def async_move_new_post_url(self):
         await self.page.goto(self.new_post_url, wait_until="networkidle", timeout=10000)
 
-    async def asnyc_post(self, html: str, tags: str):
+    async def asnyc_post(self, html: str, tags: list):
+        await self.register_dialog_dismiss_handler()
         await self.async_move_new_post_url()
 
         title, body_html = extract_title_and_body(html)
@@ -91,3 +93,21 @@ class TistoryClient:
         await self.async_set_body(body_html)
         await self.async_set_tag(tags)
         await self.async_publish()
+
+    async def register_dialog_dismiss_handler(self):
+        self.page.on("dialog", lambda dialog: asyncio.ensure_future(self.dialog_handler_dismiss(dialog)))
+
+    async def dialog_handler_dismiss(self, dialog: Dialog):
+        dialog_type = dialog.type
+
+        if dialog_type == "confirm" or dialog_type == "prompt":
+            # '취소' 버튼이 있는 confirm 및 prompt 대화 상자에 대해 dismiss() 실행
+            await dialog.dismiss()
+
+        elif dialog_type == "alert":
+            # '취소' 버튼이 없는 alert 대화 상자는 수락(Accept)해야 합니다.
+            await dialog.accept()
+
+        else:
+            # 기타 알 수 없는 유형도 안전하게 취소 처리
+            await dialog.dismiss()

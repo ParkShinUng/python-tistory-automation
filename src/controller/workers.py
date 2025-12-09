@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Any, Optional
 from src.tistory.html_parser import get_all_html
 from src.tistory import TistoryClient
 

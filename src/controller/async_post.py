@@ -61,6 +61,6 @@ async def start_auto_post(post_tuple_dict: dict = None):
             tistory_client = TistoryClient(pages[idx], new_post_url)
             tasks.append(asyncio.create_task(worker_job(tistory_client, jobs)))
 
-        all_results_nested: List[List[Tuple[int, str]]] = await asyncio.gather(*tasks)
+        all_results_nested: List[bool] = await asyncio.gather(*tasks)
 
         await browser.close()
