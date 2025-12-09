@@ -2,12 +2,14 @@ import os
 import asyncio
 
 from typing import List, Tuple
+from playwright.async_api import async_playwright, Page
+
+from src.controller.workers import worker_job
 
 from src.helper import find_user_data_by_id
-from src.controller.workers import worker_job
-from tistory import TistoryClient
+from src.tistory import TistoryClient
 from src.config import Config
-from playwright.async_api import async_playwright, Page
+
 from chainshift_playwright_extension import get_async_browser
 
 async def start_auto_post(post_tuple_dict: dict = None):
@@ -61,7 +63,3 @@ async def start_auto_post(post_tuple_dict: dict = None):
         # all_results_nested: List[List[Tuple[int, str]]] = await asyncio.gather(*tasks)
 
         await browser.close()
-
-
-if __name__ == "__main__":
-    asyncio.run(start_auto_post())

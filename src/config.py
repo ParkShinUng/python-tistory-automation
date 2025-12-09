@@ -16,12 +16,10 @@ class Config():
     USER_DATA_DIR_PATH: str = os.path.join(PROJECT_ROOT_DIR, "user_data")
     AUTH_FILE_PATH: str = os.path.join(PROJECT_ROOT_DIR, 'auth/tistory_auth.json')
 
-    # System
-    platform_info: str = platform.system()
-    
     # 병렬 처리
     num_tabs: int = 1
-    MAX_NEW_POST_PER_USER = 15
+    MAX_FILES = 15
+    MAX_TAGS = 10
 
     # TISTORY
     TISTORY_LOGIN_URL: str = "https://www.tistory.com/auth/login"

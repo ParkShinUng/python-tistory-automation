@@ -1,6 +1,6 @@
 from typing import List, Tuple
-from tistory.html_parser import get_all_html
-from tistory import TistoryClient
+from src.tistory.html_parser import get_all_html
+from src.tistory import TistoryClient
 
 
 async def worker_job(tistory_client: TistoryClient, jobs: List[Tuple[str, str]]) -> None:
