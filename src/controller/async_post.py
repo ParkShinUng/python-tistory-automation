@@ -7,7 +7,7 @@ from playwright.async_api import async_playwright, Page
 
 from src.controller.workers import worker_job
 
-from src.helper import find_user_data_by_id
+from src.helper.helper import find_user_data_by_id
 from src.tistory import TistoryClient
 from src.config import Config
 

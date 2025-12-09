@@ -47,7 +47,13 @@ class AutomationApp(QWidget):
 
     def load_login_data_from_json(self):
         """JSON 파일에서 로그인 데이터를 로드합니다."""
-        if not os.path.exists(Config.AUTH_FILE_PATH):
+        auth_dir = os.path.dirname(Config.AUTH_FILE_PATH)
+        if not os.path.isdir(auth_dir):
+            os.makedirs(auth_dir)
+
+        if not os.path.isfile(Config.AUTH_FILE_PATH):
+            with open(Config.AUTH_FILE_PATH, 'w', encoding='utf-8') as f:
+                pass
             self.log_message(f"[Info] 로그인 파일 '{Config.AUTH_FILE_PATH}'이 존재하지 않아 빈 목록으로 시작합니다.")
             return []
 
@@ -57,8 +63,6 @@ class AutomationApp(QWidget):
                 self.log_message(f"[Success] 로그인 정보 {len(data)}개를 '{Config.AUTH_FILE_PATH}'에서 로드했습니다.")
                 return data
         except json.JSONDecodeError:
-            QMessageBox.critical(self, "파일 오류", f"'{Config.AUTH_FILE_PATH}' 파일 형식이 올바르지 않습니다.")
-            self.log_message(f"[Error] '{Config.AUTH_FILE_PATH}' 파일 JSON 디코딩 오류 발생.")
             return []
         except Exception as e:
             QMessageBox.critical(self, "파일 오류", f"파일 로드 중 오류 발생: {e}")
@@ -176,20 +180,17 @@ class AutomationApp(QWidget):
     def _create_file_list_area(self):
         # ... (기존 _create_file_list_area 로직 유지)
         hint = f"최대 파일 업로드 개수 : {Config.MAX_FILES}개, TAG 입력 : 띄어쓰기로 구분, 중복 불가, 최대 {Config.MAX_TAGS}개"
-        file_list_group = QGroupBox(f"포스팅 파일 업로드 및 태그 입력({hint})", self)
+        file_list_group = QGroupBox(f"포스팅 파일 업로드 및 태그 입력(* {hint})", self)
         file_list_vbox = QVBoxLayout(file_list_group)
         file_list_vbox.setContentsMargins(10, 25, 10, 10)
 
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setStyleSheet("border: none; background-color: transparent;")
-
         self.scroll_content = QWidget()
         self.scroll_content_layout = QGridLayout(self.scroll_content)
         self.scroll_content_layout.setContentsMargins(0, 0, 0, 0)
-
         self.scroll_content_layout.setVerticalSpacing(0)
-
         self.scroll_area.setWidget(self.scroll_content)
 
         file_list_vbox.addWidget(self.scroll_area)
@@ -331,7 +332,7 @@ class AutomationApp(QWidget):
         file_label.setWordWrap(False)
 
         tag_entry = QLineEdit(self)
-        tag_entry.setPlaceholderText("예: 파이썬 CustomTkinter 자동화")
+        tag_entry.setPlaceholderText("Ex: Compare LG refrigerators specs")
         tag_entry.setProperty("valid", "true")
         tag_entry.setStyleSheet(tag_entry.styleSheet() + STYLE_SHEET)
         tag_entry.returnPressed.connect(lambda entry=tag_entry: self.start_automation_single_file(entry))
