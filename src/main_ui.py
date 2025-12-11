@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QApplication
 import sys
-from src.view.home_ui import AutomationApp
+from home_ui import AutomationApp
 
 
 if __name__ == "__main__":

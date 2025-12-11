@@ -1,7 +1,7 @@
 import asyncio
 
 from playwright.async_api import Page, Dialog
-from src.tistory.html_parser import extract_title_and_body
+from html_parser import extract_title_and_body
 
 
 class TistoryClient:

@@ -6,8 +6,8 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QGridLayout, QLabel, QLineEdit
 from chainshift_playwright_extension import get_sync_browser
 from playwright.sync_api import sync_playwright
 
-from src.config import Config
-from src.view.stylesheet import STYLE_SHEET
+from config import Config
+from stylesheet import STYLE_SHEET
 
 
 # ----------------------------------------------------------------------
@@ -91,20 +91,17 @@ class LoginRegisterDialog(QDialog):
             page = browser.pages[0] if browser.pages else browser.new_page()
             page.goto(Config.TISTORY_LOGIN_URL, wait_until="load")
 
-            try:
-                page.wait_for_selector('a.btn_login', timeout=10000)
+            if page.locator('a.btn_login').is_visible():
                 login_btn = page.locator('a.btn_login')
-                if login_btn.count() > 0:
-                    login_btn.click()
-                    page.locator('input[name="loginId"]').fill(id_val)
-                    page.locator('input[name="password"]').fill(pw_val)
-                    page.locator('button[type="submit"]').click()
-            except Exception as error:
-                print(error)
+                login_btn.click()
+                page.locator('input[name="loginId"]').fill(id_val)
+                page.locator('input[name="password"]').fill(pw_val)
+                page.locator('button[type="submit"]').click()
+                page.wait_for_load_state("networkidle")
 
-            reply.exec()
-            if reply is QMessageBox.StandardButton.Yes:
-                browser.close()
+                reply.exec()
+                if reply is QMessageBox.StandardButton.Yes:
+                    browser.close()
 
         self.result_data = {
             'ID': id_val,

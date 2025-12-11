@@ -7,10 +7,10 @@ from PyQt6.QtGui import QFont, QAction
 from PyQt6.QtWidgets import QMessageBox, QFrame, QLabel, QHBoxLayout, QWidget, QPushButton, QLineEdit, QFileDialog, \
     QTextEdit, QVBoxLayout, QGroupBox, QScrollArea, QApplication, QMenuBar, QComboBox, QGridLayout
 
-from src.config import Config
-from src.controller.async_post import start_auto_post
-from src.view.login_ui import LoginConfigWindow
-from src.view.stylesheet import STYLE_SHEET
+from config import Config
+from async_post import start_auto_post
+from login_ui import LoginConfigWindow
+from stylesheet import STYLE_SHEET
 
 
 # ----------------------------------------------------------------------

@@ -5,11 +5,11 @@ from typing import List, Tuple
 from urllib.parse import urljoin
 from playwright.async_api import async_playwright, Page
 
-from src.controller.workers import worker_job
+from workers import worker_job
 
-from src.helper.helper import find_user_data_by_id
-from src.tistory import TistoryClient
-from src.config import Config
+from helper import find_user_data_by_id
+from api import TistoryClient
+from config import Config
 
 from chainshift_playwright_extension import get_async_browser
 
@@ -19,7 +19,7 @@ async def start_auto_post(post_tuple_dict: dict = None):
     user_data = find_user_data_by_id(user_id)
     user_pw = user_data['PW']
     new_post_url = urljoin(user_data['POST_URL'], "/manage/newpost")
-    post_tuple_list = post_tuple_dict[user_id]
+    post_tuple_list: list = post_tuple_dict[user_id]
     user_info_dir_path = os.path.join(Config.USER_DATA_DIR_PATH, f"{user_id}_user_data_tistory")
 
     async with async_playwright() as p:
@@ -47,7 +47,7 @@ async def start_auto_post(post_tuple_dict: dict = None):
 
         # ----- 작업 분배 (라운드 로빈) -----
         # 5개 Tab에 작업 균등 분배 - 15 : [3, 3, 3, 3, 3]
-        worker_jobs: List[List[Tuple[str, str]]] = [[] for _ in range(Config.num_tabs)]
+        worker_jobs: List[List[Tuple[str, list]]] = [[] for _ in range(Config.num_tabs)]
         for i, job in enumerate(post_tuple_list):
         # for i, job in enumerate(post_jobs):
             worker_index = i % Config.num_tabs

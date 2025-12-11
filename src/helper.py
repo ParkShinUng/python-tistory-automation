@@ -1,6 +1,6 @@
 import json
 
-from src.config import Config
+from config import Config
 
 
 def load_login_data_from_json(LOGIN_DATA_FILE_PATH):

@@ -1,5 +1,3 @@
-# --- 공통 스타일 설정 (배경색 변경) ---
-# (STYLE_SHEET는 코드 길이를 위해 생략하며, 이전 코드와 동일합니다.)
 STYLE_SHEET = """
 QWidget {
     background-color: #1c1c1c;
