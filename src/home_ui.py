@@ -213,13 +213,9 @@ class AutomationApp(QWidget):
 
     def _create_log_area(self):
         # ... (기존 _create_log_area 로직 유지)
-        log_group = QGroupBox("실시간 처리 로그 및 상태", self)
+        log_group = QGroupBox("Log View", self)
         log_vbox = QVBoxLayout(log_group)
         log_vbox.setContentsMargins(10, 25, 10, 10)
-
-        self.count_label = QLabel(f"현재 파일 개수: 0 / {Config.MAX_FILES}개", self)
-        self.count_label.setStyleSheet("color: #3498db; font-weight: bold; margin-bottom: 5px;")
-        log_vbox.addWidget(self.count_label)
 
         self.log_textbox = QTextEdit(self)
         self.log_textbox.setReadOnly(True)
@@ -234,6 +230,10 @@ class AutomationApp(QWidget):
         control_layout.setContentsMargins(0, 5, 0, 0)
 
         control_layout.addStretch(1)
+
+        self.count_label = QLabel(f"현재 파일 개수: 0 / {Config.MAX_FILES}개", self)
+        self.count_label.setStyleSheet("color: #3498db; font-weight: bold; margin-bottom: 5px;")
+        control_layout.addWidget(self.count_label)
 
         self.clear_files_button = QPushButton("🗑️ 전체 목록 초기화", self)
         self.clear_files_button.setObjectName("ClearButton")
@@ -373,10 +373,10 @@ class AutomationApp(QWidget):
             self.scroll_content_layout.setRowStretch(2, 0)
             self.scroll_content_layout.setColumnStretch(0, 0)
             self.scroll_content_layout.setColumnStretch(2, 0)
-            header_file = QLabel("파일명")
+            header_file = QLabel("File Name")
             header_file.setFont(QFont(header_file.font().family(), -1, QFont.Weight.Bold))
             self.scroll_content_layout.addWidget(header_file, 0, 0, Qt.AlignmentFlag.AlignLeft)
-            header_tag = QLabel(f"Tag 키워드 (띄어쓰기 구분) 및 관리")
+            header_tag = QLabel(f"Tag(띄어쓰기 구분)")
             header_tag.setFont(QFont(header_tag.font().family(), -1, QFont.Weight.Bold))
             self.scroll_content_layout.addWidget(header_tag, 0, 1, Qt.AlignmentFlag.AlignLeft)
             for i, path in enumerate(self.uploaded_files):

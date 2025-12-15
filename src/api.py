@@ -93,6 +93,7 @@ class TistoryClient:
         await self.async_set_body(body_html)
         await self.async_set_tag(tags)
         await self.async_publish()
+        await asyncio.sleep(5)
 
     async def register_dialog_dismiss_handler(self):
         self.page.on("dialog", lambda dialog: asyncio.ensure_future(self.dialog_handler_dismiss(dialog)))
